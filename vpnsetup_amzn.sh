@@ -7,7 +7,7 @@
 # The latest version of this script is available at:
 # https://github.com/hwdsl2/setup-ipsec-vpn
 #
-# Copyright (C) 2020-2023 Lin Song <linsongui@gmail.com>
+# Copyright (C) 2020-2024 Lin Song <linsongui@gmail.com>
 #
 # This work is licensed under the Creative Commons Attribution-ShareAlike 3.0
 # Unported License: http://creativecommons.org/licenses/by-sa/3.0/
@@ -53,8 +53,12 @@ check_root() {
 }
 
 check_os() {
-  if ! grep -qs "Amazon Linux release 2" /etc/system-release; then
-    exiterr "This script only supports Amazon Linux 2."
+  if ! grep -qs "Amazon Linux release 2 " /etc/system-release; then
+    if grep -qs "Amazon Linux release 2023" /etc/system-release; then
+      exiterr "Amazon Linux 2023 is not supported."
+    else
+      exiterr "This script only supports Amazon Linux 2."
+    fi
   fi
 }
 
@@ -254,7 +258,7 @@ get_helper_scripts() {
 }
 
 get_swan_ver() {
-  SWAN_VER=4.10
+  SWAN_VER=4.14
   base_url="https://github.com/hwdsl2/vpn-extras/releases/download/v1.0.0"
   swan_ver_url="$base_url/v1-amzn-2-swanver"
   swan_ver_latest=$(wget -t 2 -T 10 -qO- "$swan_ver_url" | head -n 1)

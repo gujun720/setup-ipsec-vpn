@@ -10,7 +10,7 @@ IPsec VPN 可以加密你的网络流量，以防止在通过因特网传送时�
 
 我们将使用 [Libreswan](https://libreswan.org/) 作为 IPsec 服务器，以及 [xl2tpd](https://github.com/xelerance/xl2tpd) 作为 L2TP 提供者。
 
-**[&raquo; :book: 电子书：搭建自己的 IPsec VPN, OpenVPN 和 WireGuard 服务器](https://mybook.to/vpnzhs)**
+**[&raquo; :book: Book: 搭建自己的 VPN 服务器分步指南](https://books2read.com/vpnguidezh?store=amazon)**
 
 ## 快速开始
 
@@ -72,8 +72,8 @@ https://gitlab.com/hwdsl2/setup-ipsec-vpn/-/raw/master/vpnsetup.sh
 
 一个云服务器，虚拟专用服务器 (VPS) 或者专用服务器，安装以下操作系统之一：
 
-- Ubuntu 22.04, 20.04 或者 18.04
-- Debian 11 或者 10
+- Ubuntu 22.04 或者 20.04
+- Debian 12, 11 或者 10
 - CentOS 7 或者 CentOS Stream 9/8
 - Rocky Linux 或者 AlmaLinux 9/8
 - Oracle Linux 9, 8 或者 7
@@ -84,21 +84,23 @@ https://gitlab.com/hwdsl2/setup-ipsec-vpn/-/raw/master/vpnsetup.sh
 其他受支持的 Linux 发行版。
 </summary>
 
-- Raspberry Pi OS (Raspbian) 11 或者 10
+- Raspberry Pi OS (Raspbian)
 - Kali Linux
-- Alpine Linux 3.17 或者 3.16
-- Red Hat Enterprise Linux (RHEL) 9, 8 或者 7
+- Alpine Linux
+- Red Hat Enterprise Linux (RHEL)
 </details>
 
 这也包括公共云服务中的 Linux 虚拟机，例如 [DigitalOcean](https://blog.ls20.com/digitalocean), [Vultr](https://blog.ls20.com/vultr), [Linode](https://blog.ls20.com/linode), [OVH](https://www.ovhcloud.com/en/vps/) 和 [Microsoft Azure](https://azure.microsoft.com)。公共云用户也可以使用[用户数据](https://blog.ls20.com/ipsec-l2tp-vpn-auto-setup-for-ubuntu-12-04-on-amazon-ec2/#vpnsetup)部署。
 
-[![Deploy to DigitalOcean](docs/images/do-install-button.png)](http://dovpn.carlfriess.com) &nbsp;[![Deploy to Linode](docs/images/linode-deploy-button.png)](https://cloud.linode.com/stackscripts/37239) &nbsp;[![Deploy to Azure](docs/images/azure-deploy-button.png)](azure/README-zh.md)
+使用以下按钮快速部署：
+
+[![Deploy to DigitalOcean](docs/images/do-install-button.png)](http://dovpn.carlfriess.com) &nbsp;[![Deploy to Linode](docs/images/linode-deploy-button.png)](https://cloud.linode.com/stackscripts/37239) &nbsp;[![Deploy to AWS](docs/images/aws-deploy-button.png)](aws/README-zh.md) &nbsp;[![Deploy to Azure](docs/images/azure-deploy-button.png)](azure/README-zh.md)
 
 [**&raquo; 我想建立并使用自己的 VPN，但是没有可用的服务器**](https://blog.ls20.com/ipsec-l2tp-vpn-auto-setup-for-ubuntu-12-04-on-amazon-ec2/#gettingavps)
 
 对于有外部防火墙的服务器（比如 [EC2](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-security-groups.html)/[GCE](https://cloud.google.com/vpc/docs/firewalls)），请为 VPN 打开 UDP 端口 500 和 4500。
 
-另外，你也可以使用预构建的 [Docker 镜像](https://github.com/hwdsl2/docker-ipsec-vpn-server/blob/master/README-zh.md)。高级用户可以在 [Raspberry Pi](https://www.raspberrypi.org) 上安装。[[1]](https://elasticbyte.net/posts/setting-up-a-native-cisco-ipsec-vpn-server-using-a-raspberry-pi/) [[2]](https://www.stewright.me/2018/07/create-a-raspberry-pi-vpn-server-using-l2tpipsec/)
+另外，你也可以使用预构建的 [Docker 镜像](https://github.com/hwdsl2/docker-ipsec-vpn-server/blob/master/README-zh.md)。高级用户可以在 [Raspberry Pi](https://www.raspberrypi.com) 上安装。[[1]](https://elasticbyte.net/posts/setting-up-a-native-cisco-ipsec-vpn-server-using-a-raspberry-pi/) [[2]](https://www.stewright.me/2018/07/create-a-raspberry-pi-vpn-server-using-l2tpipsec/)
 
 :warning: **不要** 在你的 PC 或者 Mac 上运行这些脚本！它们只能用在服务器上！
 
@@ -161,13 +163,64 @@ https://gitlab.com/hwdsl2/setup-ipsec-vpn/-/raw/master/vpnsetup.sh
 如果无法下载，打开 [vpnsetup.sh](vpnsetup.sh)，然后点击右边的 `Raw` 按钮。按快捷键 `Ctrl/Cmd+A` 全选，`Ctrl/Cmd+C` 复制，然后粘贴到你喜欢的编辑器。
 </details>
 
-#### 可选：在安装 VPN 时自定义 IKEv2 选项。
+## 自定义 VPN 选项
 
-在安装 VPN 时，你可以自定义 IKEv2 选项。这是可选的。
+### 使用其他的 DNS 服务器
 
+在 VPN 已连接时，客户端默认配置为使用 [Google Public DNS](https://developers.google.com/speed/public-dns/)。在安装 VPN 时，你可以为所有的 VPN 模式指定另外的 DNS 服务器。这是可选的。示例如下：
+
+```bash
+sudo VPN_DNS_SRV1=1.1.1.1 VPN_DNS_SRV2=1.0.0.1 sh vpn.sh
+```
+
+使用 `VPN_DNS_SRV1` 指定主 DNS 服务器，使用 `VPN_DNS_SRV2` 指定辅助 DNS 服务器（可选）。
+
+以下是一些流行的公共 DNS 提供商的列表，供你参考。
+
+| 提供商 | 主 DNS | 辅助 DNS | 注释 |
+| ----- | ------ | ------- | ---- |
+| [Google Public DNS](https://developers.google.com/speed/public-dns) | 8.8.8.8 | 8.8.4.4 | 本项目默认 |
+| [Cloudflare](https://1.1.1.1/dns/) | 1.1.1.1 | 1.0.0.1 | 另见：[Cloudflare for families](https://1.1.1.1/family/) |
+| [Quad9](https://www.quad9.net) | 9.9.9.9 | 149.112.112.112 | 阻止恶意域 |
+| [OpenDNS](https://www.opendns.com/home-internet-security/) | 208.67.222.222 | 208.67.220.220 | 阻止网络钓鱼域，可配置。 |
+| [CleanBrowsing](https://cleanbrowsing.org/filters/) | 185.228.168.9 | 185.228.169.9 | [域过滤器](https://cleanbrowsing.org/filters/)可用 |
+| [NextDNS](https://nextdns.io/?from=bg25bwmp) | 按需选择 | 按需选择 | 广告拦截，免费套餐可用。[了解更多](https://nextdns.io/?from=bg25bwmp)。 |
+| [Control D](https://controld.com/free-dns) | 按需选择 | 按需选择 | 广告拦截，可配置。[了解更多](https://controld.com/free-dns)。 |
+
+如果你需要在安装 VPN 之后更改 DNS 服务器，参见[高级用法](docs/advanced-usage-zh.md)。
+
+**注：** 如果服务器上已经配置了 IKEv2，则以上变量对 IKEv2 模式无效。在这种情况下，如需自定义 IKEv2 选项（例如 DNS 服务器），你可以首先 [移除 IKEv2](docs/ikev2-howto-zh.md#移除-ikev2)，然后运行 `sudo ikev2.sh` 重新配置。
+
+### 自定义 IKEv2 选项
+
+在安装 VPN 时，高级用户可以自定义 IKEv2 选项。这是可选的。
+
+<details open>
+<summary>
+选项 1: 在安装 VPN 时跳过 IKEv2，然后使用自定义选项配置 IKEv2。
+</summary>
+
+在安装 VPN 时，你可以跳过 IKEv2，仅安装 IPsec/L2TP 和 IPsec/XAuth ("Cisco IPsec") 模式：
+
+```bash
+sudo VPN_SKIP_IKEV2=yes sh vpn.sh
+```
+
+（可选）如需为 VPN 客户端指定另外的 DNS 服务器，你可以定义 `VPN_DNS_SRV1` 和 `VPN_DNS_SRV2`（可选）。有关详细信息，参见[使用其他的 DNS 服务器](#使用其他的-dns-服务器)。
+
+然后运行 IKEv2 辅助脚本以使用自定义选项以交互方式配置 IKEv2:
+
+```bash
+sudo ikev2.sh
+```
+
+你可以自定义以下选项：VPN 服务器的域名，第一个客户端的名称和证书有效期，VPN 客户端的 DNS 服务器以及是否对客户端配置文件进行密码保护。
+
+**注：** 如果服务器上已经配置了 IKEv2，则 `VPN_SKIP_IKEV2` 变量无效。在这种情况下，如需自定义 IKEv2 选项，你可以首先 [移除 IKEv2](docs/ikev2-howto-zh.md#移除-ikev2)，然后运行 `sudo ikev2.sh` 重新配置。
+</details>
 <details>
 <summary>
-选项 1: 使用环境变量自定义 IKEv2 选项。
+选项 2: 使用环境变量自定义 IKEv2 选项。
 </summary>
 
 在安装 VPN 时，你可以指定一个域名作为 IKEv2 服务器地址。这是可选的。该域名必须是一个全称域名(FQDN)。示例如下：
@@ -193,27 +246,6 @@ sudo VPN_DNS_SRV1=1.1.1.1 VPN_DNS_SRV2=1.0.0.1 sh vpn.sh
 ```bash
 sudo VPN_PROTECT_CONFIG=yes sh vpn.sh
 ```
-</details>
-<details>
-<summary>
-选项 2: 在安装 VPN 时跳过 IKEv2，然后使用自定义选项配置 IKEv2。
-</summary>
-
-在安装 VPN 时，你可以跳过 IKEv2，仅安装 IPsec/L2TP 和 IPsec/XAuth ("Cisco IPsec") 模式：
-
-```bash
-sudo VPN_SKIP_IKEV2=yes sh vpn.sh
-```
-
-（可选）如需为 VPN 客户端指定另外的 DNS 服务器，你可以定义 `VPN_DNS_SRV1` 和 `VPN_DNS_SRV2`（可选）。有关详细信息，参见上面的选项 1。
-
-然后运行 IKEv2 [辅助脚本](docs/ikev2-howto-zh.md#使用辅助脚本配置-ikev2) 使用自定义选项以交互方式配置 IKEv2:
-
-```bash
-sudo ikev2.sh
-```
-
-**注：** 如果服务器上已经配置了 IKEv2，则 `VPN_SKIP_IKEV2` 变量无效。在这种情况下，如需自定义 IKEv2 选项，你可以首先 [移除 IKEv2](docs/ikev2-howto-zh.md#移除-ikev2)，然后运行 `sudo ikev2.sh` 重新配置。
 </details>
 <details>
 <summary>
@@ -266,11 +298,9 @@ sudo ikev2.sh
 
 **[配置 IPsec/XAuth ("Cisco IPsec") VPN 客户端](docs/clients-xauth-zh.md)**
 
-**[:book: 电子书：搭建自己的 IPsec VPN, OpenVPN 和 WireGuard 服务器](https://mybook.to/vpnzhs)**
+**阅读 [:book: VPN book](https://ko-fi.com/post/Support-this-project-and-get-access-to-supporter-o-X8X5FVFZC) 以访问 [额外内容](https://ko-fi.com/post/Support-this-project-and-get-access-to-supporter-o-X8X5FVFZC)。**
 
 开始使用自己的专属 VPN! :sparkles::tada::rocket::sparkles:
-
-喜欢这个项目？[:heart: 赞助](https://github.com/sponsors/hwdsl2?metadata_o=iz) 或 [:coffee: 支持](https://ko-fi.com/hwdsl2) 并访问 [额外内容](https://ko-fi.com/post/Support-this-project-and-get-access-to-supporter-o-X8X5FVFZC)。
 
 ## 重要提示
 
@@ -315,7 +345,7 @@ https://gitlab.com/hwdsl2/setup-ipsec-vpn/-/raw/master/extras/vpnupgrade.sh
 如果无法下载，打开 [vpnupgrade.sh](extras/vpnupgrade.sh)，然后点击右边的 `Raw` 按钮。按快捷键 `Ctrl/Cmd+A` 全选，`Ctrl/Cmd+C` 复制，然后粘贴到你喜欢的编辑器。
 </details>
 
-当前支持的 Libreswan 最新版本是 `4.10`。查看已安装版本：`ipsec --version`。
+当前支持的 Libreswan 最新版本是 `4.14`。查看已安装版本：`ipsec --version`。
 
 **注：** `xl2tpd` 可以使用系统的软件包管理器进行更新，例如 Ubuntu/Debian 上的 `apt-get`。
 
@@ -336,6 +366,7 @@ https://gitlab.com/hwdsl2/setup-ipsec-vpn/-/raw/master/extras/vpnupgrade.sh
 - [域名和更改服务器 IP](docs/advanced-usage-zh.md#域名和更改服务器-ip)
 - [仅限 IKEv2 的 VPN](docs/advanced-usage-zh.md#仅限-ikev2-的-vpn)
 - [VPN 内网 IP 和流量](docs/advanced-usage-zh.md#vpn-内网-ip-和流量)
+- [指定 VPN 服务器的公有 IP](docs/advanced-usage-zh.md#指定-vpn-服务器的公有-ip)
 - [自定义 VPN 子网](docs/advanced-usage-zh.md#自定义-vpn-子网)
 - [转发端口到 VPN 客户端](docs/advanced-usage-zh.md#转发端口到-vpn-客户端)
 - [VPN 分流](docs/advanced-usage-zh.md#vpn-分流)
@@ -384,7 +415,7 @@ https://gitlab.com/hwdsl2/setup-ipsec-vpn/-/raw/master/extras/vpnuninstall.sh
 
 ## 授权协议
 
-版权所有 (C) 2014-2023 [Lin Song](https://github.com/hwdsl2) [![View my profile on LinkedIn](https://static.licdn.com/scds/common/u/img/webpromo/btn_viewmy_160x25.png)](https://www.linkedin.com/in/linsongui)   
+版权所有 (C) 2014-2024 [Lin Song](https://github.com/hwdsl2) [![View my profile on LinkedIn](https://static.licdn.com/scds/common/u/img/webpromo/btn_viewmy_160x25.png)](https://www.linkedin.com/in/linsongui)   
 基于 [Thomas Sarlandie 的工作](https://github.com/sarfata/voodooprivacy) (版权所有 2012)
 
 [![Creative Commons License](https://i.creativecommons.org/l/by-sa/3.0/88x31.png)](http://creativecommons.org/licenses/by-sa/3.0/)   

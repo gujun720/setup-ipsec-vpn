@@ -9,7 +9,7 @@ IPsec/XAuth 模式也称为 "Cisco IPsec"。该模式通常能够比 IPsec/L2TP 
 ---
 * 平台名称
   * [Windows](#windows)
-  * [OS X (macOS)](#os-x)
+  * [OS X (macOS)](#os-x-macos)
   * [Android](#android)
   * [iOS (iPhone/iPad)](#ios)
   * [Linux](#linux)
@@ -38,7 +38,30 @@ IPsec/XAuth 模式也称为 "Cisco IPsec"。该模式通常能够比 IPsec/L2TP 
 
 如果在连接过程中遇到错误，请参见 [故障排除](clients-zh.md#ikev1-故障排除)。
 
-## OS X
+## OS X (macOS)
+
+### macOS 13 (Ventura) 及以上
+
+> 你也可以使用 [IKEv2](ikev2-howto-zh.md)（推荐）或者 [IPsec/L2TP](clients-zh.md) 模式连接。
+
+1. 打开系统设置并转到网络部分。
+1. 在窗口右方单击 **VPN**。
+1. 从 **添加VPN配置** 下拉菜单选择 **Cisco IPSec**。
+1. 在打开的窗口中的 **显示名称** 字段中输入任意内容。
+1. 在 **服务器地址** 字段中输入`你的 VPN 服务器 IP`。
+1. 在 **帐户名称** 字段中输入`你的 VPN 用户名`。
+1. 在 **密码** 字段中输入`你的 VPN 密码`。
+1. 从 **类型** 下拉菜单选择 **共享密钥**。
+1. 在 **共享密钥** 字段中输入`你的 VPN IPsec PSK`。
+1. 保持 **群组名称** 字段空白。
+1. 单击 **创建** 保存 VPN 连接信息。
+1. 如果要在菜单栏显示 VPN 状态并快速访问相关设置，你可以转到系统设置的控制中心部分，滚动到页面底部并在 **VPN** 下拉菜单选择 **在菜单栏中显示**。
+
+要连接到 VPN：使用菜单栏中的图标，或者打开系统设置的 **VPN** 部分并启用 VPN 连接。最后你可以到 [这里](https://www.ipchicken.com) 检测你的 IP 地址，应该显示为`你的 VPN 服务器 IP`。
+
+如果在连接过程中遇到错误，请参见 [故障排除](clients-zh.md#ikev1-故障排除)。
+
+### macOS 12 (Monterey) 及以下
 
 > 你也可以使用 [IKEv2](ikev2-howto-zh.md)（推荐）或者 [IPsec/L2TP](clients-zh.md) 模式连接。
 
@@ -56,7 +79,7 @@ IPsec/XAuth 模式也称为 "Cisco IPsec"。该模式通常能够比 IPsec/L2TP 
 1. 保持 **群组名称** 字段空白。
 1. 单击 **好**。
 1. 选中 **在菜单栏中显示 VPN 状态** 复选框。
-1. 单击 **应用** 保存VPN连接信息。
+1. 单击 **应用** 保存 VPN 连接信息。
 
 要连接到 VPN：使用菜单栏中的图标，或者打开系统偏好设置的网络部分，选择 VPN 并单击 **连接**。最后你可以到 [这里](https://www.ipchicken.com) 检测你的 IP 地址，应该显示为`你的 VPN 服务器 IP`。
 
@@ -66,7 +89,7 @@ IPsec/XAuth 模式也称为 "Cisco IPsec"。该模式通常能够比 IPsec/L2TP 
 
 **重要：** Android 用户应该使用更安全的 [IKEv2 模式](ikev2-howto-zh.md) 连接（推荐）。Android 12+ 仅支持 IKEv2 模式。Android 系统自带的 VPN 客户端对 IPsec/L2TP 和 IPsec/XAuth ("Cisco IPsec") 模式使用安全性较低的 `modp1024` (DH group 2)。
 
-如果你仍然想用 IPsec/XAuth 模式连接，你必须首先编辑 VPN 服务器上的 `/etc/ipsec.conf` 并在 `ike=...` 一行的末尾加上 `,aes256-sha2;modp1024,aes128-sha1;modp1024` 字样。保存文件并运行 `sudo service ipsec restart`。
+如果你仍然想用 IPsec/XAuth 模式连接，你必须首先编辑 VPN 服务器上的 `/etc/ipsec.conf` 并在 `ike=...` 一行的末尾加上 `,aes256-sha2;modp1024,aes128-sha1;modp1024` 字样。保存文件并运行 `service ipsec restart`。
 
 Docker 用户：在 [你的 env 文件](https://github.com/hwdsl2/docker-ipsec-vpn-server/blob/master/README-zh.md#如何使用本镜像) 中添加 `VPN_ENABLE_MODP1024=yes`，然后重新创建 Docker 容器。
 
@@ -145,7 +168,7 @@ Fedora 28 （和更新版本）和 CentOS 8/7 用户可以使用 `yum` 安装 `N
 
 注： 这个协议仅适用于本文档。
 
-版权所有 (C) 2016-2023 [Lin Song](https://github.com/hwdsl2) [![View my profile on LinkedIn](https://static.licdn.com/scds/common/u/img/webpromo/btn_viewmy_160x25.png)](https://www.linkedin.com/in/linsongui)   
+版权所有 (C) 2016-2024 [Lin Song](https://github.com/hwdsl2) [![View my profile on LinkedIn](https://static.licdn.com/scds/common/u/img/webpromo/btn_viewmy_160x25.png)](https://www.linkedin.com/in/linsongui)   
 受到 [Joshua Lund 的工作](https://github.com/StreisandEffect/streisand/blob/6aa6b6b2735dd829ca8c417d72eb2768a89b6639/playbooks/roles/l2tp-ipsec/templates/instructions.md.j2) 的启发
 
 本程序为自由软件，在自由软件联盟发布的[ GNU 通用公共许可协议](https://www.gnu.org/licenses/gpl.html)的约束下，你可以对其进行再发布及修改。协议版本为第三版或（随你）更新的版本。
